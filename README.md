@@ -9,6 +9,4 @@
 <br>
 -- Docker
 <br>
--- Mock - Pesquisar (Mockito*)
-<br>
 -- MySql
