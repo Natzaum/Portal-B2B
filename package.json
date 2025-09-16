@@ -18,6 +18,9 @@
   },
   "homepage": "https://github.com/Natzaum/Portal-B2B#readme",
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "mysql2": "^3.15.0",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^0.3.26"
   }
 }
