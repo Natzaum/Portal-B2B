@@ -2,6 +2,7 @@
 
 ## ***Tecnologias utilizadas***
 -- Node.js
+<br>
 -- React
 -- JWT
 -- Docker
