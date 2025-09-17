@@ -9,7 +9,8 @@ const AppDataSource = new DataSource({
     password: "12345678",
     database: "portal_b2b",
     synchronize: true,
-    logging: true
+    logging: true,
+    entities: ["/models/*.js"],
 })
 
 module.exports = { AppDataSource }
