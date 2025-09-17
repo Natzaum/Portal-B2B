@@ -1,8 +1,8 @@
 const { EntitySchema } = require("typeorm")
 
 const Cliente = new EntitySchema({
-  name: "Cliente",          // 👈 Nome da entidade
-  tableName: "cliente",     // 👈 Nome da tabela
+  name: "Cliente",
+  tableName: "cliente",
   columns: {
     id: {
       type: Number,

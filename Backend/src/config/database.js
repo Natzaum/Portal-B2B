@@ -1,6 +1,6 @@
 require("reflect-metadata")
 const { DataSource } = require("typeorm")
-const Cliente = require("../models/cliente") // 👈 agora está correto
+const Cliente = require("../models/cliente")
 
 const AppDataSource = new DataSource({
   type: "mysql",
@@ -11,7 +11,7 @@ const AppDataSource = new DataSource({
   database: "portal_b2b",
   synchronize: true,
   logging: true,
-  entities: [Cliente],   // 👈 passa a entidade correta
+  entities: [Cliente],
   migrations: [],
   subscribers: [],
 })
