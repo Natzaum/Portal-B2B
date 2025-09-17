@@ -5,6 +5,7 @@ const Cliente = require("../models/cliente")
 const AppDataSource = new DataSource({
   type: "mysql",
   host: "localhost",
+  
   port: 3307,
   username: "nata",
   password: "12345678",
