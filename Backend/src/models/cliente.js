@@ -4,7 +4,7 @@ const Cliente = new EntitySchema({
   name: "Cliente",
   tableName: "cliente",
   columns: {
-    id: {
+    idCliente: {
       type: Number,
       primary: true,
       generated: true,
@@ -49,6 +49,20 @@ const Cliente = new EntitySchema({
     ativo: {
       type: Boolean,
       default: true,
+    },
+  },
+
+
+  relations: {
+    pedidos: {
+      type: "one-to-many",
+      target: "Pedidos",
+      inverseSide: "cliente"
+    },
+    carrinho:{
+      type: "one-to-many",
+      target:"Carrinho",
+      inverseSide:"cliente",
     },
   },
 })
