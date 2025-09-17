@@ -1,10 +1,13 @@
 const express = require("express")
 const { AppDataSource } = require("./src/config/database")
+const { registrarCliente } = require("./src/controller/cliente")
 
 const app = express()
 
 // Middleware para tratar JSON
 app.use(express.json())
+
+app.post("/clientes", registrarCliente)
 
 // Rota simples
 app.get("/", (req, res) => {
