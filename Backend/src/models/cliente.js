@@ -33,7 +33,6 @@ const Cliente = new EntitySchema({
     telefone: {
       type: String,
       length: 20,
-      unique: true,
       nullable: false,
     },
     endereco: {
