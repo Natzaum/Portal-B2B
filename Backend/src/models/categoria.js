@@ -28,7 +28,14 @@ const Categoria = new EntitySchema({
         default: true,
     },
 
-  }
+  },
+  relations: {
+    produtos: {
+      type: "one-to-many",
+      target: "Produto",
+      inverseSide: "categoria"
+    },
+  },
 
 })
 
