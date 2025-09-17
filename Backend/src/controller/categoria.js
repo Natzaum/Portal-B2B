@@ -1,6 +1,6 @@
 const { AppDataSource } = require("../config/database")
 const Categoria = require("../models/categoria")
-const Cliente = require("../models/categoria")
+
 
 
 
