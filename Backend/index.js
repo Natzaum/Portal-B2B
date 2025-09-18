@@ -1,9 +1,13 @@
 const express = require("express")
+const cors = require("cors")
 const { AppDataSource } = require("./src/config/database")
 const { registrarCliente } = require("./src/controller/cliente")
 const { registrarCategoria } = require("./src/controller/categoria")
 
 const app = express()
+app.use(cors({
+  origin: "*"
+}))
 
 app.use(express.json())
 
@@ -14,6 +18,9 @@ const { registrarProduto, listarProduto, buscarProduto, atualizarProduto, remove
 const { registrarPedido, listarPedidos, buscarPedido, atualizarPedido, removerPedido } = require("./src/controller/pedidos")
 const { registrarItemCarrinho, listarItensCarrinho, buscarItemCarrinho, atualizarItemCarrinho, removerItemCarrinho } = require("./src/controller/itensCarrinho")
 const { registrarItemPedido, listarItensPedidos, buscarItemPedido, atualizarItemPedido, removerItemPedido } = require("./src/controller/itensPedidos")
+const { login } = require("./src/controller/auth")
+
+app.post("/login", login)
 
 app.post("/itensCarrinho", registrarItemCarrinho)
 app.get("/itensCarrinho", listarItensCarrinho)
