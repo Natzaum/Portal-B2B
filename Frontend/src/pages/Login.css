@@ -1,0 +1,146 @@
+/* ===== Fundo ===== */
+.login-page {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-image: url('https://yata-apix-a4713dfd-4c13-4f82-af86-9d885960371e.s3-object.locaweb.com.br/45a33667fc8e49c698f63add16230880.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ===== Card (um pouco maior) ===== */
+.login-card {
+  width: min(520px, 94vw);        /* ↑ aumentei */
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(2px);
+  padding: 32px 28px 24px;        /* ↑ um pouco mais de respiro */
+  border-radius: 18px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
+  color: #1f2937;
+  overflow: hidden;               /* evita qualquer “vazamento” visual */
+}
+
+/* Cabeçalho */
+.login-header {
+  text-align: center;
+  margin-bottom: 22px;
+}
+.login-header h2 {
+  margin: 0 0 6px;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+.login-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: .98rem;
+}
+
+/* Formulário */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;                      /* ↑ um pouco mais de espaço entre campos */
+}
+
+/* Labels sempre acima, sem quebrar o layout */
+.login-form label {
+  font-size: .95rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Inputs corrigidos: largura total, borda, cor de texto ESCURA */
+.login-form input[type="email"],
+.login-form input[type="password"] {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;         /* ← evita passar pra fora */
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #111827;                 /* ← texto escuro (aparece ao digitar) */
+  font-size: 1rem;
+  outline: none;
+  transition: box-shadow .2s ease, border-color .2s ease, background-color .2s;
+}
+
+.login-form input::placeholder {
+  color: #9ca3af;                 /* placeholder visível, sem “sumir” */
+}
+
+.login-form input:focus {
+  border-color: #c49b63;
+  box-shadow: 0 0 0 3px rgba(196, 155, 99, 0.25);
+  background-color: #fff;
+}
+
+/* Linha com lembrar + esqueceu */
+.form-actions {
+  margin-top: 2px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.remember {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .95rem;
+  color: #374151;
+}
+.remember input {
+  width: 16px;
+  height: 16px;
+}
+
+.link-inline {
+  color: #0f62fe;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: .95rem;
+}
+.link-inline:hover {
+  text-decoration: underline;
+}
+
+/* Botão */
+.login-form button {
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 12px;
+  background: #c49b63;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: filter .15s ease, transform .04s ease;
+}
+.login-form button:hover { filter: brightness(0.96); }
+.login-form button:active { transform: translateY(1px); }
+.login-form button:disabled { opacity: .7; cursor: not-allowed; }
+
+/* Rodapé */
+.login-footer {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  color: #4b5563;
+  font-size: .98rem;
+}
+
+/* Responsivo */
+@media (max-width: 420px) {
+  .login-card { padding: 26px 20px 20px; }
+  .form-actions { gap: 10px; }
+}
