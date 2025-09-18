@@ -1,32 +1,30 @@
 const { AppDataSource } = require("../config/database")
 const Produto = require("../models/produto")
+const Categoria = require("../models/categoria")
 
 async function registrarProduto(req, res) {
   try {
-    const { nomeProd, descricao, precoUnit, quantidadeEstoque } = req.body
-    if (!nomeProd || !descricao || !precoUnit || !quantidadeEstoque ) {
+    const { nomeProd, descricao, precoUnitario, quantidadeEstoque, idCategoria } = req.body
+    if (!nomeProd || !descricao || !precoUnitario || !quantidadeEstoque || !idCategoria) {
       return res.status(400).json({ error: "Todos os campos são obrigatórios" })
     }
 
-    const clienteRepo = AppDataSource.getRepository(Produto)
-
-   
-
-    
+    const produtoRepo = AppDataSource.getRepository(Produto)
 
     const novoProduto = produtoRepo.create({
-        nomeProd,
-        descricao,
-        precoUnit,
-        quantidadeEstoque,
-        ativo: true
+      nomeProd,
+      descricao,
+      precoUnitario,
+      quantidadeEstoque,
+      idCategoria,
+      ativo: true
     })
 
     await produtoRepo.save(novoProduto)
 
     return res.status(201).json({
       message: "Produto registrado com sucesso",
-      cliente: novoProduto
+      produto: novoProduto
     })
   } catch (error) {
     console.error("Erro ao registrar produto:", error)

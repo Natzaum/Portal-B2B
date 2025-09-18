@@ -1,18 +1,58 @@
 const express = require("express")
 const { AppDataSource } = require("./src/config/database")
 const { registrarCliente } = require("./src/controller/cliente")
+const { registrarCategoria } = require("./src/controller/categoria")
 
 const app = express()
 
 app.use(express.json())
 
 const { listarClientes, buscarCliente, atualizarCliente, removerCliente } = require("./src/controller/cliente")
+const { listarCategoria, buscarCategoria, atualizarCategoria, removerCategoria } = require("./src/controller/categoria")
+const { registrarCarrinho, listarCarrinhos, buscarCarrinho, atualizarCarrinho } = require("./src/controller/carrinho")
+const { registrarProduto, listarProduto, buscarProduto, atualizarProduto, removerProduto } = require("./src/controller/produto")
+const { registrarPedido, listarPedidos, buscarPedido, atualizarPedido, removerPedido } = require("./src/controller/pedidos")
+const { registrarItemCarrinho, listarItensCarrinho, buscarItemCarrinho, atualizarItemCarrinho } = require("./src/controller/itensCarrinho")
+const { registrarItemPedido, listarItensPedidos, buscarItemPedido, atualizarItemPedido } = require("./src/controller/itensPedidos")
+
+app.post("/itensCarrinho", registrarItemCarrinho)
+app.get("/itensCarrinho", listarItensCarrinho)
+app.get("/itensCarrinho/:id", buscarItemCarrinho)
+app.put("/itensCarrinho/:id", atualizarItemCarrinho)
+
+app.post("/itensPedidos", registrarItemPedido)
+app.get("/itensPedidos", listarItensPedidos)
+app.get("/itensPedidos/:id", buscarItemPedido)
+app.put("/itensPedidos/:id", atualizarItemPedido)
+
+app.post("/pedidos", registrarPedido)
+app.get("/pedidos", listarPedidos)
+app.get("/pedidos/:id", buscarPedido)
+app.put("/pedidos/:id", atualizarPedido)
+app.delete("/pedidos/:id", removerPedido)
+
+app.post("/produtos", registrarProduto)
+app.get("/produtos", listarProduto)
+app.get("/produtos/:id", buscarProduto)
+app.put("/produtos/:id", atualizarProduto)
+app.delete("/produtos/:id", removerProduto)
+
+app.post("/carrinhos", registrarCarrinho)
+app.get("/carrinhos", listarCarrinhos)
+app.get("/carrinhos/:id", buscarCarrinho)
+app.put("/carrinhos/:id", atualizarCarrinho)
 
 app.post("/clientes", registrarCliente)
 app.get("/clientes", listarClientes)
 app.get("/clientes/:id", buscarCliente)
 app.put("/clientes/:id", atualizarCliente)
 app.delete("/clientes/:id", removerCliente)
+
+app.post("/categorias", registrarCategoria)
+app.get("/categorias", listarCategoria)
+app.get("/categorias/:id", buscarCategoria)
+app.put("/categorias/:id", atualizarCategoria)
+app.delete("/categorias/:id", removerCategoria)
 
 app.get("/", (req, res) => {
   res.send("Olá, mundo!")
