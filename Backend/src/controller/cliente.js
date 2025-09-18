@@ -55,9 +55,9 @@ async function listarClientes(req, res) {
 
 async function buscarCliente(req, res) {
   try {
-    const id = parseInt(req.params.id)
+    const idCliente = parseInt(req.params.id)
     const clienteRepo = AppDataSource.getRepository(Cliente)
-    const cliente = await clienteRepo.findOne({ where: { id } })
+    const cliente = await clienteRepo.findOne({ where: { idCliente } })
     if (!cliente) return res.status(404).json({ error: "Cliente não encontrado" })
     return res.json(cliente)
   } catch (error) {
@@ -68,16 +68,15 @@ async function buscarCliente(req, res) {
 
 async function atualizarCliente(req, res) {
   try {
-    const id = parseInt(req.params.id)
+    const idCliente = parseInt(req.params.id)
     const { name, telefone, endereco } = req.body
     const clienteRepo = AppDataSource.getRepository(Cliente)
-    const cliente = await clienteRepo.findOne({ where: { id } })
+    const cliente = await clienteRepo.findOne({ where: { idCliente } })
     if (!cliente) return res.status(404).json({ error: "Cliente não encontrado" })
 
     if (name) cliente.name = name
     if (telefone) cliente.telefone = telefone
     if (endereco) cliente.endereco = endereco
-    cliente.updatedAt = new Date()
 
     await clienteRepo.save(cliente)
 
@@ -90,9 +89,9 @@ async function atualizarCliente(req, res) {
 
 async function removerCliente(req, res) {
   try {
-    const id = parseInt(req.params.id)
+    const idCliente = parseInt(req.params.id)
     const clienteRepo = AppDataSource.getRepository(Cliente)
-    const cliente = await clienteRepo.findOne({ where: { id } })
+    const cliente = await clienteRepo.findOne({ where: { idCliente } })
     if (!cliente) return res.status(404).json({ error: "Cliente não encontrado" })
 
     await clienteRepo.remove(cliente)

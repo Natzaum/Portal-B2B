@@ -1,6 +1,5 @@
 const { AppDataSource } = require("../config/database")
 const Produto = require("../models/produto")
-const Categoria = require("../models/categoria")
 
 async function registrarProduto(req, res) {
   try {
@@ -35,19 +34,19 @@ async function registrarProduto(req, res) {
 async function listarProduto(req, res) {
   try {
     const produtoRepo = AppDataSource.getRepository(Produto)
-    const produto = await produtoRepo.find()
-    return res.json(produto)
+    const produtos = await produtoRepo.find()
+    return res.json(produtos)
   } catch (error) {
-    console.error("Erro ao listar produto:", error)
+    console.error("Erro ao listar produtos:", error)
     return res.status(500).json({ error: "Erro interno do servidor" })
   }
 }
 
 async function buscarProduto(req, res) {
   try {
-    const id = parseInt(req.params.id)
+    const idProd = parseInt(req.params.id)
     const produtoRepo = AppDataSource.getRepository(Produto)
-    const produto = await produtoRepo.findOne({ where: { id } })
+    const produto = await produtoRepo.findOne({ where: { idProd } })
     if (!produto) return res.status(404).json({ error: "Produto não encontrado" })
     return res.json(produto)
   } catch (error) {
@@ -58,16 +57,18 @@ async function buscarProduto(req, res) {
 
 async function atualizarProduto(req, res) {
   try {
-    const id = parseInt(req.params.id)
-    const { nomeProd, descricao, precoUnit,ativo } = req.body
+    const idProd = parseInt(req.params.id)
+    const { nomeProd, descricao, precoUnitario, ativo, quantidadeEstoque, idCategoria } = req.body
     const produtoRepo = AppDataSource.getRepository(Produto)
-    const produto = await produtoRepo.findOne({ where: { id } })
+    const produto = await produtoRepo.findOne({ where: { idProd } })
     if (!produto) return res.status(404).json({ error: "Produto não encontrado" })
 
     if (nomeProd) produto.nomeProd = nomeProd
     if (descricao) produto.descricao = descricao
-    if (precoUnit) produto.precoUnitario = precoUnit
-    produto.updatedAt = new Date()
+    if (precoUnitario) produto.precoUnitario = precoUnitario
+    if (quantidadeEstoque) produto.quantidadeEstoque = quantidadeEstoque
+    if (idCategoria) produto.idCategoria = idCategoria
+    if (ativo !== undefined) produto.ativo = ativo
 
     await produtoRepo.save(produto)
 
@@ -80,12 +81,12 @@ async function atualizarProduto(req, res) {
 
 async function removerProduto(req, res) {
   try {
-    const id = parseInt(req.params.id)
+    const idProd = parseInt(req.params.id)
     const produtoRepo = AppDataSource.getRepository(Produto)
-    const produto = await produtoRepo.findOne({ where: { id } })
+    const produto = await produtoRepo.findOne({ where: { idProd } })
     if (!produto) return res.status(404).json({ error: "Produto não encontrado" })
 
-    await clienteRepo.remove(produto)
+    await produtoRepo.remove(produto)
 
     return res.json({ message: "Produto removido com sucesso" })
   } catch (error) {

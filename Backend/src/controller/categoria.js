@@ -5,7 +5,7 @@ async function registrarCategoria(req, res) {
   try {
     const { nomeCategoria } = req.body
     if (!nomeCategoria) {
-      return res.status(400).json({ error: "Todos os campos são obrigatórios" })
+      return res.status(400).json({ error: "nomeCategoria é obrigatório" })
     }
 
     const categoriaRepo = AppDataSource.getRepository(Categoria)
@@ -40,9 +40,9 @@ async function listarCategoria(req, res) {
 
 async function buscarCategoria(req, res) {
   try {
-    const id = parseInt(req.params.id)
+    const idCategoria = parseInt(req.params.id)
     const categoriaRepo = AppDataSource.getRepository(Categoria)
-    const categoria = await categoriaRepo.findOne({ where: { idCategoria: id } })
+    const categoria = await categoriaRepo.findOne({ where: { idCategoria } })
     if (!categoria) return res.status(404).json({ error: "Categoria não encontrada" })
     return res.json(categoria)
   } catch (error) {
@@ -53,13 +53,14 @@ async function buscarCategoria(req, res) {
 
 async function atualizarCategoria(req, res) {
   try {
-    const id = parseInt(req.params.id)
-    const { nomeCategoria } = req.body
+    const idCategoria = parseInt(req.params.id)
+    const { nomeCategoria, ativo } = req.body
     const categoriaRepo = AppDataSource.getRepository(Categoria)
-    const categoria = await categoriaRepo.findOne({ where: { idCategoria: id } })
+    const categoria = await categoriaRepo.findOne({ where: { idCategoria } })
     if (!categoria) return res.status(404).json({ error: "Categoria não encontrada" })
 
     if (nomeCategoria) categoria.nomeCategoria = nomeCategoria
+    if (ativo !== undefined) categoria.ativo = ativo
 
     await categoriaRepo.save(categoria)
 
@@ -72,9 +73,9 @@ async function atualizarCategoria(req, res) {
 
 async function removerCategoria(req, res) {
   try {
-    const id = parseInt(req.params.id)
+    const idCategoria = parseInt(req.params.id)
     const categoriaRepo = AppDataSource.getRepository(Categoria)
-    const categoria = await categoriaRepo.findOne({ where: { idCategoria: id } })
+    const categoria = await categoriaRepo.findOne({ where: { idCategoria } })
     if (!categoria) return res.status(404).json({ error: "Categoria não encontrada" })
 
     await categoriaRepo.remove(categoria)

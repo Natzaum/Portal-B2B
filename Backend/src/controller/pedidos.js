@@ -4,23 +4,26 @@ const ItensPedidos = require("../models/itensPedidos")
 const Produto = require("../models/produto")
 const Cliente = require("../models/cliente")
 
-// Criar um pedido (com itens)
 async function registrarPedido(req, res) {
   try {
     const { idCliente, itens } = req.body
-    // itens = [{ idProduto, quantidade, precoUnitario }]
 
     if (!idCliente || !itens || itens.length === 0) {
-      return res.status(400).json({ error: "Cliente e itens são obrigatórios" })
+      return res.status(400).json({ error: "idCliente e itens são obrigatórios" })
+    }
+
+    const clienteRepo = AppDataSource.getRepository(Cliente)
+    const cliente = await clienteRepo.findOne({ where: { idCliente } })
+    if (!cliente) {
+      return res.status(404).json({ error: "Cliente não encontrado" })
     }
 
     const pedidoRepo = AppDataSource.getRepository(Pedidos)
     const itemPedidoRepo = AppDataSource.getRepository(ItensPedidos)
     const produtoRepo = AppDataSource.getRepository(Produto)
 
-    // cria pedido base
     const novoPedido = pedidoRepo.create({
-      cliente: { id: idCliente },
+      cliente,
       dataPedidos: new Date(),
       status: "Pendente",
       valorTotal: 0
@@ -29,21 +32,22 @@ async function registrarPedido(req, res) {
     await pedidoRepo.save(novoPedido)
 
     let valorTotal = 0
-    // percorre itens
+
     for (const item of itens) {
       const produto = await produtoRepo.findOne({ where: { idProd: item.idProduto } })
       if (!produto) {
         return res.status(404).json({ error: `Produto ${item.idProduto} não encontrado` })
       }
 
-      const subtotal = item.quantidade * item.precoUnitario
+      const precoUnitario = item.precoUnitario || produto.precoUnitario
+      const subtotal = item.quantidade * precoUnitario
       valorTotal += subtotal
 
       const novoItem = itemPedidoRepo.create({
         pedido: novoPedido,
-        produto: produto,
+        produto,
         quantidade: item.quantidade,
-        precoUnitario: item.precoUnitario,
+        precoUnitario,
         subtotal
       })
 
@@ -63,11 +67,12 @@ async function registrarPedido(req, res) {
   }
 }
 
-// Listar todos os pedidos
 async function listarPedidos(req, res) {
   try {
     const pedidoRepo = AppDataSource.getRepository(Pedidos)
-    const pedidos = await pedidoRepo.find({ relations: ["cliente", "itemPedidosReferencia", "itemPedidosReferencia.produto"] })
+    const pedidos = await pedidoRepo.find({
+      relations: ["cliente", "itemPedidosReferencia", "itemPedidosReferencia.produto"]
+    })
     return res.json(pedidos)
   } catch (error) {
     console.error("Erro ao listar pedidos:", error)
@@ -75,7 +80,6 @@ async function listarPedidos(req, res) {
   }
 }
 
-// Buscar pedido por ID
 async function buscarPedido(req, res) {
   try {
     const idPedido = parseInt(req.params.id)
@@ -92,7 +96,6 @@ async function buscarPedido(req, res) {
   }
 }
 
-// Atualizar status de um pedido
 async function atualizarPedido(req, res) {
   try {
     const idPedido = parseInt(req.params.id)
@@ -111,7 +114,6 @@ async function atualizarPedido(req, res) {
   }
 }
 
-// Remover pedido
 async function removerPedido(req, res) {
   try {
     const idPedido = parseInt(req.params.id)
