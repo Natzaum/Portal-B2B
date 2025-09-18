@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meus Pedidos - Portal B2B</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{margin:0;font-family:Inter,sans-serif;background:#f5f4f0;color:#2e2b25}
+    .header{height:64px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 24px;color:#fff}
+    .header-left{display:flex;align-items:center;gap:12px}
+    .logo-img{height:42px;border-radius:8px}
+    .empresa-nome{font-weight:700;margin-left:16px}
+    .header-right{display:flex;align-items:center;gap:16px}
+    .cart-btn{position:relative;border:0;background:transparent;color:#fff;cursor:pointer;padding:6px;display:grid;place-items:center}
+    .cart-btn svg{width:26px;height:26px}
+    .badge{position:absolute;top:-4px;right:-4px;background:#ffae00;color:#111;border-radius:999px;font-size:12px;font-weight:700;padding:3px 6px;min-width:20px;text-align:center}
+    .header-link{color:#fff;text-decoration:none;font-weight:600;opacity:.9}
+    .header-link:hover{opacity:1}
+    .container{max-width:1000px;margin:32px auto;background:#fff;border-radius:16px;border:1px solid #e7dfd4;padding:24px}
+    h1{font-size:32px;text-align:center;color:#9a7a45;margin-bottom:24px}
+    .pedido-card{border:1px solid #e7dfd4;border-radius:12px;padding:16px;margin-bottom:16px;background:#f6efe6}
+    .pedido-header{display:flex;justify-content:space-between;font-weight:600;margin-bottom:8px}
+    .pedido-info{font-size:14px;color:#6b6257;margin-bottom:8px}
+    .pedido-itens{margin-top:12px;padding-left:16px}
+    .pedido-itens li{margin-bottom:6px;font-size:14px}
+    .btn-voltar{display:inline-block;margin:16px 0;padding:10px 16px;border-radius:8px;background:#b29463;color:#fff;text-decoration:none;font-weight:600;transition:.2s}
+    .btn-voltar:hover{background:#9a7a45}
+
+    /* Drawer carrinho */
+    .cart-drawer{position:fixed;inset:0 0 0 auto;width:420px;max-width:100%;background:#fff;border-left:1px solid #e7dfd4;transform:translateX(100%);transition:.25s;z-index:50;display:flex;flex-direction:column}
+    .cart-drawer.open{transform:translateX(0)}
+    .cart-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #e7dfd4;background:#faf8f4}
+    .cart-head h4{margin:0;font-size:18px}
+    .close{border:0;background:transparent;font-size:28px;cursor:pointer}
+    .cart-list{flex:1;overflow:auto;padding:8px 12px}
+    .item{border-bottom:1px dashed #e7dfd4;padding:12px 4px}
+    .info{display:flex;flex-direction:column}
+    .name{font-weight:700}
+    .unit{font-size:13px;color:#6b6257}
+    .cart-foot{border-top:1px solid #e7dfd4;padding:12px 16px;background:#fff;display:flex;flex-direction:column;gap:10px}
+    .total{display:flex;align-items:center;justify-content:space-between;font-size:18px;font-weight:800}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.28);opacity:0;pointer-events:none;transition:.25s;z-index:40}
+    .overlay.open{opacity:1;pointer-events:auto}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <img src="imagens/logoversatil.png" alt="Logo Versátil" class="logo-img">
+      <span id="empresa-logada" class="empresa-nome"></span>
+    </div>
+    <div class="header-right">
+      <button id="openCart" class="cart-btn" aria-label="Abrir carrinho">
+      </button>
+      <a href="produtos.html" class="header-link">Voltar para Catálogo</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1>Meus Pedidos</h1>
+    <div id="pedidos-lista"></div>
+  </div>
+
+  <!-- Drawer carrinho -->
+  <div id="overlay" class="overlay"></div>
+  <aside id="drawer" class="cart-drawer">
+    <div class="cart-head">
+      <h4>Seu carrinho</h4>
+      <button id="closeCart" class="close">×</button>
+    </div>
+    <div id="cartList" class="cart-list"></div>
+    <div class="cart-foot">
+      <div class="total"><span>Total</span><span id="cartTotal">R$ 0,00</span></div>
+    </div>
+  </aside>
+
+  <script>
+    const clienteLogado = JSON.parse(localStorage.getItem("cliente"))
+    let carrinhoId = null
+
+    if (clienteLogado) {
+      document.getElementById("empresa-logada").innerText = clienteLogado.name
+    }
+
+    function money(n){return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+
+    async function initCarrinho(){
+      const resp = await fetch("http://localhost:3000/carrinhos", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({idCliente:clienteLogado.idCliente})
+      })
+      const data = await resp.json()
+      carrinhoId = data.carrinho.idCarrinho
+      carregarCarrinho()
+    }
+
+    async function carregarCarrinho(){
+      if(!carrinhoId) return
+      const resp = await fetch(`http://localhost:3000/carrinhos/${carrinhoId}`)
+      const carrinho = await resp.json()
+      const cartList=document.getElementById("cartList")
+      let total=0
+      cartList.innerHTML=""
+      carrinho.itensCarrinho.forEach(item=>{
+        total+=item.precoUnitario*item.quantidade
+        cartList.innerHTML+=`
+          <div class="item">
+            <div class="info">
+              <div class="name">${item.produto.nomeProd}</div>
+              <div class="unit">${item.quantidade} x ${money(item.precoUnitario)}</div>
+            </div>
+          </div>
+        `
+      })
+      document.getElementById("cartTotal").textContent=money(total)
+      document.getElementById("cartCount").textContent=carrinho.itensCarrinho.length
+    }
+
+    async function carregarPedidos() {
+      const resp = await fetch("http://localhost:3000/pedidos")
+      const pedidos = await resp.json()
+      const pedidosCliente = pedidos.filter(p => p.cliente.idCliente === clienteLogado.idCliente)
+      const lista = document.getElementById("pedidos-lista")
+      lista.innerHTML = pedidosCliente.length===0 ? "<p>Você ainda não possui pedidos.</p>" : ""
+
+      pedidosCliente.forEach(p=>{
+        const card=document.createElement("div")
+        card.className="pedido-card"
+        const data=new Date(p.dataPedidos).toLocaleDateString("pt-BR")
+        let itensHTML="<ul class='pedido-itens'>"
+        p.itemPedidosReferencia.forEach(item=>{
+          itensHTML+=`<li>${item.quantidade}x ${item.produto.nomeProd} - ${money(item.subtotal)}</li>`
+        })
+        itensHTML+="</ul>"
+        card.innerHTML=`
+          <div class="pedido-header">
+            <span>Pedido #${p.idPedido}</span>
+            <span>${p.status}</span>
+          </div>
+          <div class="pedido-info">Data: ${data}</div>
+          <div class="pedido-info">Valor Total: ${money(p.valorTotal)}</div>
+          ${itensHTML}
+        `
+        lista.appendChild(card)
+      })
+    }
+
+    function setOpen(v){document.getElementById("drawer").classList.toggle("open",v);document.getElementById("overlay").classList.toggle("open",v)}
+    document.getElementById("openCart").onclick=()=>setOpen(true)
+    document.getElementById("closeCart").onclick=()=>setOpen(false)
+    document.getElementById("overlay").onclick=()=>setOpen(false)
+
+    initCarrinho()
+    carregarPedidos()
+  </script>
+</body>
+</html>

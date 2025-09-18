@@ -1,31 +1,38 @@
 const { AppDataSource } = require("../config/database")
 const ItensCarrinho = require("../models/itensCarrinho")
+const Produto = require("../models/produto")
 
 async function registrarItemCarrinho(req, res) {
   try {
-    const { idCarrinho, idProduto, quantidade, precoUnitario } = req.body
-    if (!idCarrinho || !idProduto || !quantidade || !precoUnitario) {
-      return res.status(400).json({ error: "Todos os campos são obrigatórios" })
+    const { idCarrinho, idProduto, quantidade } = req.body
+    if (!idCarrinho || !idProduto || !quantidade) {
+      return res.status(400).json({ error: "Campos obrigatórios ausentes" })
+    }
+
+    const produtoRepo = AppDataSource.getRepository(Produto)
+    const produto = await produtoRepo.findOne({ where: { idProd: idProduto } })
+    if (!produto) return res.status(404).json({ error: "Produto não encontrado" })
+
+    if (produto.quantidadeEstoque < quantidade) {
+      return res.status(400).json({ error: "Estoque insuficiente" })
     }
 
     const repo = AppDataSource.getRepository(ItensCarrinho)
-
     const novoItem = repo.create({
       carrinho: { idCarrinho },
       produto: { idProd: idProduto },
       quantidade,
-      precoUnitario
+      precoUnitario: produto.precoUnitario
     })
-
     await repo.save(novoItem)
 
-    return res.status(201).json({
-      message: "Item adicionado ao carrinho com sucesso",
-      item: novoItem
-    })
+    produto.quantidadeEstoque -= quantidade
+    await produtoRepo.save(produto)
+
+    return res.status(201).json({ message: "Item adicionado ao carrinho", item: novoItem })
   } catch (error) {
-    console.error("Erro ao adicionar item ao carrinho:", error)
-    return res.status(500).json({ error: "Erro ao adicionar item ao carrinho" })
+    console.error("Erro ao adicionar item:", error)
+    return res.status(500).json({ error: "Erro interno" })
   }
 }
 
