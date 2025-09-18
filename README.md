@@ -72,8 +72,9 @@ Servidor ficará disponível em http://localhost:3000
 Abra os arquivos HTML no navegador, por exemplo:
 
 frontend/login.html
+```
 
-🔑 Fluxo de uso
+### 🔑 Fluxo de uso
 Cadastro/Login
 
 Cliente se cadastra via cadastro.html
@@ -106,7 +107,7 @@ Logout
 
 Botão Sair limpa localStorage e redireciona para login.html.
 
-📌 Observações
+### 📌 Observações
 O backend usa synchronize: true, o que recria tabelas automaticamente em desenvolvimento. Para produção, ajuste para false.
 
 O estoque dos produtos é decrementado ao adicionar no carrinho.
