@@ -52,9 +52,46 @@
             <div class="produto-descricao">${prod.descricao}</div>
             <div class="produto-preco">R$ ${prod.precoUnitario.toFixed(2)}</div>
             <div class="produto-estoque">Estoque: ${prod.quantidadeEstoque} unidades</div>
+            <button class="add-carrinho-btn" data-id="${prod.idProd}" data-preco="${prod.precoUnitario}">
+              Adicionar ao Carrinho
+            </button>
           `
           lista.appendChild(card)
         })
+
+        // Ativar cliques nos botões
+        document.querySelectorAll(".add-carrinho-btn").forEach(btn => {
+          btn.addEventListener("click", async (e) => {
+            const idProduto = e.target.getAttribute("data-id")
+            const precoUnitario = parseFloat(e.target.getAttribute("data-preco"))
+
+            try {
+              // ⚠️ Ajuste: pegar idCarrinho do backend (ou criar automaticamente um por cliente)
+              const response = await fetch("http://localhost:3000/itensCarrinho", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  idCarrinho: clienteLogado.idCliente, // assumindo carrinho = cliente
+                  idProduto,
+                  quantidade: 1,
+                  precoUnitario
+                })
+              })
+
+              const result = await response.json()
+              if (response.ok) {
+                alert("Produto adicionado ao carrinho!")
+                console.log(result)
+              } else {
+                alert("Erro: " + result.error)
+              }
+            } catch (err) {
+              console.error("Erro ao adicionar ao carrinho:", err)
+              alert("Erro de conexão com o servidor")
+            }
+          })
+        })
+
       } catch (error) {
         console.error("Erro ao carregar produtos:", error)
       }
