@@ -3,6 +3,9 @@ const cors = require("cors")
 const { AppDataSource } = require("./src/config/database")
 const { registrarCliente } = require("./src/controller/cliente")
 const { registrarCategoria } = require("./src/controller/categoria")
+const Cliente = require("./src/models/cliente")
+const Categoria = require("./src/models/categoria")
+const Produto = require("./src/models/produto")
 
 const app = express()
 app.use(cors({
@@ -68,9 +71,126 @@ app.get("/", (req, res) => {
   res.send("Olá, mundo!")
 })
 
+async function seedDatabase() {
+  const clienteRepo = AppDataSource.getRepository(Cliente)
+  const categoriaRepo = AppDataSource.getRepository(Categoria)
+  const produtoRepo = AppDataSource.getRepository(Produto)
+
+  const clientesExistentes = await clienteRepo.find()
+  if (clientesExistentes.length === 0) {
+    const clienteTeste = clienteRepo.create({
+      name: "Empresa Teste LTDA",
+      email: "teste@empresa.com",
+      CNPJ_CPF: "12345678000199",
+      telefone: "11999999999",
+      endereco: "Rua Exemplo, 123",
+      senha: "123456",
+      ativo: true
+    })
+    await clienteRepo.save(clienteTeste)
+  }
+
+  const categoriasExistentes = await categoriaRepo.find()
+  if (categoriasExistentes.length === 0) {
+    const categorias = [
+      categoriaRepo.create({ nomeCategoria: "Gestão Empresarial", ativo: true }),
+      categoriaRepo.create({ nomeCategoria: "Automação Comercial", ativo: true }),
+      categoriaRepo.create({ nomeCategoria: "Serviços em Nuvem", ativo: true }),
+      categoriaRepo.create({ nomeCategoria: "Integrações & Suporte", ativo: true })
+    ]
+    await categoriaRepo.save(categorias)
+  }
+
+  const produtosExistentes = await produtoRepo.find()
+  if (produtosExistentes.length === 0) {
+    const categorias = await categoriaRepo.find()
+    const catGestao = categorias.find(c => c.nomeCategoria === "Gestão Empresarial")
+    const catAutomacao = categorias.find(c => c.nomeCategoria === "Automação Comercial")
+    const catNuvem = categorias.find(c => c.nomeCategoria === "Serviços em Nuvem")
+    const catSuporte = categorias.find(c => c.nomeCategoria === "Integrações & Suporte")
+
+    const produtos = [
+      {
+        nomeProd: "ERP Versátil PME",
+        descricao: "Sistema completo de gestão para pequenas e médias empresas",
+        precoUnitario: 1200,
+        quantidadeEstoque: 100,
+        categoria: catGestao,
+        ativo: true
+      },
+      {
+        nomeProd: "Gestão Financeira Avançada",
+        descricao: "Controle de fluxo de caixa, conciliação bancária e relatórios em tempo real",
+        precoUnitario: 800,
+        quantidadeEstoque: 200,
+        categoria: catGestao,
+        ativo: true
+      },
+
+      {
+        nomeProd: "Frente de Caixa PDV",
+        descricao: "Sistema rápido e integrado para vendas no balcão",
+        precoUnitario: 500,
+        quantidadeEstoque: 300,
+        categoria: catAutomacao,
+        ativo: true
+      },
+      {
+        nomeProd: "Gestão de Estoque Inteligente",
+        descricao: "Controle automático de estoque com alertas de reposição",
+        precoUnitario: 650,
+        quantidadeEstoque: 150,
+        categoria: catAutomacao,
+        ativo: true
+      },
+
+      {
+        nomeProd: "Backup em Nuvem Seguro",
+        descricao: "Armazenamento criptografado com restauração rápida",
+        precoUnitario: 300,
+        quantidadeEstoque: 500,
+        categoria: catNuvem,
+        ativo: true
+      },
+      {
+        nomeProd: "Hospedagem SaaS Versátil",
+        descricao: "Ambiente seguro e escalável para rodar aplicações da sua empresa",
+        precoUnitario: 1000,
+        quantidadeEstoque: 100,
+        categoria: catNuvem,
+        ativo: true
+      },
+
+      {
+        nomeProd: "Integração com Marketplaces",
+        descricao: "Conexão com Mercado Livre, Shopee e Amazon",
+        precoUnitario: 900,
+        quantidadeEstoque: 50,
+        categoria: catSuporte,
+        ativo: true
+      },
+      {
+        nomeProd: "Suporte Premium",
+        descricao: "Atendimento prioritário e consultoria personalizada",
+        precoUnitario: 400,
+        quantidadeEstoque: 500,
+        categoria: catSuporte,
+        ativo: true
+      }
+    ]
+
+    for (const p of produtos) {
+      const novoProduto = produtoRepo.create(p)
+      await produtoRepo.save(novoProduto)
+    }
+  }
+}
+
 AppDataSource.initialize()
-  .then(() => {
+  .then(async () => {
     console.log("Database Connected")
+
+    await seedDatabase()
 
     const PORT = process.env.PORT || 3000
     app.listen(PORT, () => {
