@@ -39,14 +39,14 @@ git clone git@github.com:seu-usuario/portal-b2b.git
 cd portal-b2b/backend
 2. Instalar dependências
 ```
-````bash
 Copiar código
+````bash
 npm install
 3. Configurar banco de dados
 No arquivo backend/src/config/database.js, configure seu MySQL:
 ````
-````js
 Copiar código
+````js
 const AppDataSource = new DataSource({
   type: "mysql",
   host: "localhost",
@@ -61,13 +61,12 @@ const AppDataSource = new DataSource({
 ````
 Crie o banco no MySQL:
 
-````sql
 Copiar código
+````sql
 CREATE DATABASE portal_b2b;
 ````
 4. Rodar backend
 ````bash
-Copiar código
 npm start
 Servidor ficará disponível em http://localhost:3000
 ````
