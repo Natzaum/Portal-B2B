@@ -38,13 +38,14 @@ O projeto permite cadastro de clientes, categorias e produtos, gerenciar carrinh
 git clone git@github.com:seu-usuario/portal-b2b.git
 cd portal-b2b/backend
 2. Instalar dependências
-bash
+```
+````bash
 Copiar código
 npm install
 3. Configurar banco de dados
 No arquivo backend/src/config/database.js, configure seu MySQL:
-
-js
+````
+````js
 Copiar código
 const AppDataSource = new DataSource({
   type: "mysql",
@@ -57,22 +58,23 @@ const AppDataSource = new DataSource({
   logging: true,
   entities: [Cliente, Pedidos, Carrinho, Categoria, ItensCarrinho, ItensPedidos, Produto],
 })
+````
 Crie o banco no MySQL:
 
-sql
+````sql
 Copiar código
 CREATE DATABASE portal_b2b;
+````
 4. Rodar backend
-bash
+````bash
 Copiar código
 npm start
 Servidor ficará disponível em http://localhost:3000
-
+````
 5. Abrir frontend
 Abra os arquivos HTML no navegador, por exemplo:
 
 frontend/login.html
-```
 
 ### 🔑 Fluxo de uso
 Cadastro/Login
