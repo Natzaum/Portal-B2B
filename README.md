@@ -108,7 +108,7 @@ Logout
 Botão Sair limpa localStorage e redireciona para login.html.
 
 ### 📌 Observações
-O backend usa synchronize: true, o que recria tabelas automaticamente em desenvolvimento. Para produção, ajuste para false.
+O backend usa synchronize: true, o que recria tabelas automaticamente em desenvolvimento.
 
 O estoque dos produtos é decrementado ao adicionar no carrinho.
 
