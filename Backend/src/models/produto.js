@@ -14,11 +14,11 @@ const Produto = new EntitySchema({
             unique: true,
         },
         //fk
-        idCategoria:{
-            type: Number,
-            unique:true,
-            nullable: false,
-        },
+idCategoria: {
+  type: Number,
+  nullable: false,
+},
+
         nomeProd: {
             type: String,
             length: 100,
